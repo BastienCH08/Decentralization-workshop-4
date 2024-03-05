@@ -36,6 +36,10 @@ export async function simpleOnionRouter(nodeId: number) {
     res.json({ result: privateKey });
   });
 
+  let lastMessageSource: number | null = null;
+  onionRouter.get("/getLastMessageSource", (req, res) => {
+    res.json({ result: lastMessageSource });
+  });
 
   const response = await fetch(`http://localhost:${REGISTRY_PORT}/registerNode`, {
     method: "POST",

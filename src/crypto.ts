@@ -52,15 +52,12 @@ export async function exportPubKey(key: webcrypto.CryptoKey): Promise<string> {
 }
 
 // Export a crypto private key to a base64 string format
-export async function exportPrvKey(
-  key: webcrypto.CryptoKey | null
-): Promise<string | null> {
+export async function exportPrvKey(key: webcrypto.CryptoKey | null): Promise<string | null> {
   try {
     if (key) {
       const exportedKey = await crypto.subtle.exportKey("pkcs8", key);
       const exportedKeyArray = new Uint8Array(exportedKey);
       const exportedKeyBase64 = btoa(String.fromCharCode(...exportedKeyArray));
-
       return exportedKeyBase64;
     } 
     else {
@@ -120,11 +117,23 @@ export async function rsaEncrypt(
   b64Data: string,
   strPublicKey: string
 ): Promise<string> {
-  // TODO implement this function to encrypt a base64 encoded message with a public key
-  // tip: use the provided base64ToArrayBuffer function
-
-  // remove this
-  return "";
+  try {
+    const publicKey = await importPubKey(strPublicKey);
+    const dataBuffer = base64ToArrayBuffer(b64Data);
+    const encryptedData = await webcrypto.subtle.encrypt(
+      {
+        name: "RSA-OAEP",
+      },
+      publicKey,
+      dataBuffer
+    );
+    const encryptedDataB64 = arrayBufferToBase64(new Uint8Array(encryptedData));
+    return encryptedDataB64;
+  } 
+  catch (error) {
+    console.error('Error encrypting with RSA public key:', error);
+    throw error;
+  }
 }
 
 // Decrypts a message using an RSA private key
@@ -132,11 +141,22 @@ export async function rsaDecrypt(
   data: string,
   privateKey: webcrypto.CryptoKey
 ): Promise<string> {
-  // TODO implement this function to decrypt a base64 encoded message with a private key
-  // tip: use the provided base64ToArrayBuffer function
-
-  // remove this
-  return "";
+  try {
+    const encryptedDataBuffer = base64ToArrayBuffer(data);
+    const decryptedData = await webcrypto.subtle.decrypt(
+      {
+        name: "RSA-OAEP",
+      },
+      privateKey,
+      encryptedDataBuffer
+    );
+    const decryptedDataB64 = arrayBufferToBase64(new Uint8Array(decryptedData));
+    return decryptedDataB64;
+  } 
+  catch (error) {
+    console.error('Error decrypting with RSA private key:', error);
+    throw error;
+  }
 }
 
 // ######################
