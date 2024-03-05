@@ -10,7 +10,6 @@ export async function simpleOnionRouter(nodeId: number) {
   onionRouter.use(express.json());
   onionRouter.use(bodyParser.json());
 
-  // TODO implement the status route
   onionRouter.get("/status", (req, res) => {res.send("live");});
 
   let lastReceivedEncryptedMessage: string | null = null;
@@ -48,7 +47,6 @@ export async function simpleOnionRouter(nodeId: number) {
       pubKey: publicKey,
     }),
   });
-  console.log(await response.json());
   
   
   
